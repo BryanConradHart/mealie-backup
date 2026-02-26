@@ -1,6 +1,8 @@
 # Mealie-backup
 This project is intended to be a simple solution for people who want to schedule their [mealie](https://mealie.io/) backups, and use docker compose.
 
+**Warning:** This is AI slop, I made this messing around with AI doing little projects I had no energy to do myself.
+
 ## Why
 
 Mealie has an [extensive API](https://docs.mealie.io/documentation/getting-started/api-usage/) with the ability to manage backups, but there is no built-in way to schedule automatic backups. This project fills that gap by providing a simple, dependency-minimal container that:
