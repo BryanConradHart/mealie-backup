@@ -19,7 +19,8 @@
 1. Docker image that can be [published to github](https://docs.github.com/en/actions/tutorials/publish-packages/publish-docker-images)
 2. Example docker compose service in [[README.md]] that can be pasted into a user's Mealie compose file, including a working healthcheck.
 3. Passing unit test suite.
-4. GitHub Actions workflow that automatically builds and publishes the Docker image to GitHub Container Registry (ghcr.io) on releases, using free GitHub features.
+4. GitHub Actions workflow that automatically builds, tests, and publishes the Docker image to GitHub Container Registry (ghcr.io) on releases, using free GitHub features.
+5. README that contains instructions for how to use the project, and how to do development on it.
 
 ## Technical Guidance
 1. This project will be deployed as a docker container in docker compose.
