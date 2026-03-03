@@ -9,23 +9,17 @@ echo "Starting mealie-backup container..."
 echo "Validating configuration..."
 python -m src.config
 
-# Export environment variables for cron to a writable location
-echo "Exporting environment variables..."
-env > /tmp/env.sh
+# Start scheduler with backup cron schedule
+echo "Starting scheduler with cron schedule: $BACKUP_SCHEDULE"
+exec python << 'EOF'
+import sys
+import logging
+from src.backup import run_backup
+from src.scheduler import run_scheduler
 
-# Write crontab with the backup schedule
-echo "Setting up backup schedule: $BACKUP_SCHEDULE"
-BACKUP_CMD="cd /app && . /tmp/env.sh && python -m src.backup"
-CRON_JOB="$BACKUP_SCHEDULE su - backup -c '$BACKUP_CMD' >> /proc/1/fd/1 2>&1"
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Create crontab file (requires root)
-mkdir -p /etc/crontabs
-echo "$CRON_JOB" > /etc/crontabs/root
-
-# Validate crontab
-echo "Installing crontab..."
-crontab /etc/crontabs/root
-
-# Start cron daemon in foreground
-echo "Starting cron daemon..."
-exec crond -f -l 2
+import os
+cron_schedule = os.getenv('BACKUP_SCHEDULE', '0 0 * * *')
+run_scheduler(cron_schedule, run_backup)
+EOF

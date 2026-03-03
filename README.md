@@ -135,14 +135,51 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 ### Testing
 
-Install development dependencies and run tests:
+The project includes both unit tests and Docker integration tests to catch runtime issues.
+
+**Install development dependencies:**
 
 ```bash
 pip install -r requirements-dev.txt
+```
+
+**Run unit tests only:**
+
+```bash
+pytest tests/ -v -m "not slow" --ignore=tests/test_docker_integration.py
+```
+
+**Run Docker integration tests:**
+
+*Requires Docker to be installed and running*
+
+```bash
+pytest tests/test_docker_integration.py -v
+```
+
+**Run all tests (unit + integration):**
+
+```bash
 pytest tests/ -v
 ```
 
-To test the backup operation locally with your own Mealie instance:
+**What integration tests validate:**
+- ✅ Docker image builds successfully
+- ✅ Container starts without permission errors
+- ✅ Configuration validation works  
+- ✅ Scheduler initializes with cron expressions
+- ✅ Invalid configurations are rejected
+
+**Integration Test Architecture:**
+
+The integration tests use a subprocess-based approach (Docker CLI) rather than testcontainers. This is intentional:
+
+- **Testcontainers limitations on Windows**: testcontainers has known issues with tar archive creation on Windows due to WSL2 filesystem interop performance. The Docker Python SDK's `tar()` operation can timeout on Windows when building images.
+- **Subprocess reliability**: Direct Docker CLI invocation via subprocess is more reliable on Windows and doesn't require complex resource management libraries.
+- **Cleanup strategy**: Tests use multi-layer cleanup (try/finally in fixtures, autouse fixtures at class/session scope) to guarantee resource cleanup even if tests timeout or fail.
+- **Timeout protection**: pytest-timeout provides framework-level protection (120s default), while subprocess calls have individual timeouts (30-600s based on operation).
+
+**Test backup operation locally with your own Mealie instance:**
 
 ```bash
 export MEALIE_URL=http://localhost:9000

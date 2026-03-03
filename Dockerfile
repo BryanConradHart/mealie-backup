@@ -4,7 +4,6 @@ FROM python:3.12-alpine as base
 
 # Install runtime dependencies (minimal for Alpine)
 RUN apk add --no-cache \
-    dcron \
     ca-certificates
 
 WORKDIR /app
@@ -20,7 +19,7 @@ COPY entrypoint.sh .
 # Make entrypoint executable
 RUN chmod +x /app/entrypoint.sh
 
-# Create a non-root user for running the backup script
+# Create a non-root user
 RUN addgroup -g 1000 -S backup && \
     adduser -u 1000 -S backup -G backup && \
     mkdir -p /tmp && chmod 777 /tmp
@@ -35,8 +34,8 @@ ENV RETENTION_WEEKLY="4"
 ENV RETENTION_MONTHLY="6"
 ENV RETENTION_YEARLY="1"
 
-# Run as root (required for cron setup; backup script runs as 'backup' user via cron)
-USER root
+# Use non-root user
+USER backup
 
 # Health check: verify the marker file is updated within 24 hours
 HEALTHCHECK --interval=60s --timeout=5s --retries=3 --start-period=30s \
