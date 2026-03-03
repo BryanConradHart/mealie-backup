@@ -80,12 +80,12 @@ services:
     # ... other mealie configuration ...
 
   mealie-backup:
-    image: ghcr.io/yourusername/mealie-backup:latest
+    image: ghcr.io/bryanconradhart/mealie-backup:latest
     environment:
       - MEALIE_URL=http://mealie:9000
       - MEALIE_API_TOKEN=${MEALIE_BACKUP_TOKEN}
       - TZ=America/New_York
-      - BACKUP_SCHEDULE=0 3 * * *
+      - BACKUP_SCHEDULE=0 0 * * *
       - RETENTION_DAILY=7
       - RETENTION_WEEKLY=4
       - RETENTION_MONTHLY=6
@@ -93,7 +93,7 @@ services:
     healthcheck:
       test: ["CMD", "test", "-f", "/tmp/healthy"]
       interval: 86400s
-      timeout: 5s
+      timeout: 60s
       retries: 3
       start_period: 30s
     restart: unless-stopped
